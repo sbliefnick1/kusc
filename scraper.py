@@ -1,0 +1,26 @@
+from bs4 import BeautifulSoup
+import pandas as pd
+import requests
+
+url = 'https://www.kusc.org/playlist/2019/08/03/'
+headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0'}
+response = requests.get(url, headers=headers)
+soup = BeautifulSoup(response.text, 'lxml')
+
+# tables are returned in reverse order on the page but actual chronological order
+# pieces within tables are reverse chronological
+tables = soup.find_all('table')
+
+tables = pd.read_html(str(tables))
+
+# get shows and their hosts
+accordions = soup.find_all('div', attrs={'class': 'accordion-content'})
+
+# loop through dfs and add host and show name
+for j in range(len(accordions)):
+    tables[j]['show'] = accordions[j].h3.contents[0].strip()
+    tables[j]['host'] = accordions[j].h3.contents[1].text[5:]
+
+# todo: loop over html and gather links to buy CDs; add as column to df
+
+df = pd.concat(tables, ignore_index=True)
