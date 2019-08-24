@@ -30,3 +30,7 @@ for j in range(len(tables)):
     tables[j]['purchase_link'] = links
 
 df = pd.concat(tables, ignore_index=True)
+
+# todo: remove duplicates
+# todo: sort by time
+# todo: rename columns
