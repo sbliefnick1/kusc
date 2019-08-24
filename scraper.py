@@ -9,18 +9,24 @@ soup = BeautifulSoup(response.text, 'lxml')
 
 # tables are returned in reverse order on the page but actual chronological order
 # pieces within tables are reverse chronological
-tables = soup.find_all('table')
+t = soup.find_all('table')
 
-tables = pd.read_html(str(tables))
+# convert to dataframes
+tables = pd.read_html(str(t))
 
 # get shows and their hosts
 accordions = soup.find_all('div', attrs={'class': 'accordion-content'})
 
-# loop through dfs and add host and show name
-for j in range(len(accordions)):
+for j in range(len(tables)):
+    # add host and show name
     tables[j]['show'] = accordions[j].h3.contents[0].strip()
     tables[j]['host'] = accordions[j].h3.contents[1].text[5:]
 
-# todo: loop over html and gather links to buy CDs; add as column to df
+    # extract purchase link for each piece
+    pieces = t[j].find_all('tr')
+    links = [row.find_all('td')[-1].a.attrs['href'] for row in pieces]
+
+    # add links as column
+    tables[j]['purchase_link'] = links
 
 df = pd.concat(tables, ignore_index=True)
