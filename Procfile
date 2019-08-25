@@ -1,0 +1,1 @@
+web: gunicorn kusc.app:app
