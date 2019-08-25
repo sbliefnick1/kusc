@@ -50,5 +50,5 @@ df.sort_values(by='time', inplace=True)
 df.drop_duplicates(inplace=True)
 
 today = datetime.date.today()
-df['date'] = today
-df['datetime'] = df['time'].apply(lambda x: datetime.datetime.combine(today, x))
+df.insert(0, 'date', today)
+df.insert(0, 'datetime', df['time'].apply(lambda x: datetime.datetime.combine(today, x)))
