@@ -39,5 +39,10 @@ df.rename(columns={'Unnamed: 0': 'time',
                    'Record Co.Catalog No.': 'record_co_catalog_no',
                    }, inplace=True)
 
+# clean up time and convert data type
+df['time'] = df['time'].apply(lambda x: '0' + x if len(x) == 7 else x)
+df['time'] = pd.to_datetime(df['time'], format='%I:%M %p').dt.time
+
+df.sort_values(by='time', inplace=True)
+
 # todo: remove duplicates
-# todo: sort by time
