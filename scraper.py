@@ -1,3 +1,5 @@
+import datetime
+
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
@@ -46,3 +48,7 @@ df['time'] = pd.to_datetime(df['time'], format='%I:%M %p').dt.time
 
 df.sort_values(by='time', inplace=True)
 df.drop_duplicates(inplace=True)
+
+today = datetime.date.today()
+df['date'] = today
+df['datetime'] = df['time'].apply(lambda x: datetime.datetime.combine(today, x))
