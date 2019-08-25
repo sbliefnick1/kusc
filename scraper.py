@@ -31,6 +31,13 @@ for j in range(len(tables)):
 
 df = pd.concat(tables, ignore_index=True)
 
+del df['Buy CD']
+df.rename(columns={'Unnamed: 0': 'time',
+                   'Title': 'title',
+                   'Composer': 'composer',
+                   'Performers': 'performers',
+                   'Record Co.Catalog No.': 'record_co_catalog_no',
+                   }, inplace=True)
+
 # todo: remove duplicates
 # todo: sort by time
-# todo: rename columns
