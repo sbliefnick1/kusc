@@ -23,6 +23,7 @@ for j in range(len(tables)):
     tables[j]['host'] = accordions[j].h3.contents[1].text[5:]
 
     # extract purchase link for each piece
+    # link in last <td> of each <tr>
     pieces = t[j].find_all('tr')
     links = [row.find_all('td')[-1].a.attrs['href'] for row in pieces]
 
@@ -44,5 +45,4 @@ df['time'] = df['time'].apply(lambda x: '0' + x if len(x) == 7 else x)
 df['time'] = pd.to_datetime(df['time'], format='%I:%M %p').dt.time
 
 df.sort_values(by='time', inplace=True)
-
-# todo: remove duplicates
+df.drop_duplicates(inplace=True)
