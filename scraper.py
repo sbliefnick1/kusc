@@ -46,9 +46,11 @@ df.rename(columns={'Unnamed: 0': 'time',
 df['time'] = df['time'].apply(lambda x: '0' + x if len(x) == 7 else x)
 df['time'] = pd.to_datetime(df['time'], format='%I:%M %p').dt.time
 
+# sort and drop dupes
 df.sort_values(by='time', inplace=True)
 df.drop_duplicates(inplace=True)
 
+# insert date and datetime
 today = datetime.date.today()
 df.insert(0, 'date', today)
 df.insert(0, 'datetime', df['time'].apply(lambda x: datetime.datetime.combine(today, x)))
