@@ -1,9 +1,12 @@
 import datetime
+import os
 
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
+from sqlalchemy import create_engine
 
+engine = create_engine(os.environ['DATABASE_URL'])
 url = 'https://www.kusc.org/playlist/2019/08/03/'
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0'}
 response = requests.get(url, headers=headers)
@@ -46,6 +49,8 @@ df.rename(columns={'Unnamed: 0': 'time',
 df['time'] = df['time'].apply(lambda x: '0' + x if len(x) == 7 else x)
 df['time'] = pd.to_datetime(df['time'], format='%I:%M %p').dt.time
 
+# todo: make datetime and time columns tz-aware
+
 # sort and drop dupes
 df.sort_values(by='time', inplace=True)
 df.drop_duplicates(inplace=True)
@@ -54,3 +59,5 @@ df.drop_duplicates(inplace=True)
 today = datetime.date.today()
 df.insert(0, 'date', today)
 df.insert(0, 'datetime', df['time'].apply(lambda x: datetime.datetime.combine(today, x)))
+
+df.to_sql('playlist', engine, if_exists='append', index=False)
