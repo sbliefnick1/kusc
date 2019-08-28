@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -7,6 +8,15 @@ import requests
 from sqlalchemy import create_engine
 
 engine = create_engine(os.environ['DATABASE_URL'])
+base_url = 'https://www.kusc.org/playlist/'
+
+# check command line args
+args = sys.argv
+if len(args) > 1:
+    dates = list(args[1:])
+else:
+    yesterday = datetime.datetime.today() - datetime.timedelta(days=1)
+
 url = 'https://www.kusc.org/playlist/2019/08/03/'
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0'}
 response = requests.get(url, headers=headers)
