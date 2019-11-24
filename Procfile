@@ -1,1 +1,2 @@
-web: gunicorn kusc.app:app
+web: gunicorn app:app
+scraper: python scraper.py
