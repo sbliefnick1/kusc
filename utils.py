@@ -59,7 +59,7 @@ def process_dataframes(html: ResultSet,
         # add links as column
         table_dataframes[j]['purchase_link'] = links
 
-        return table_dataframes
+    return table_dataframes
 
 
 def clean_and_format_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
