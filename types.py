@@ -1,4 +1,4 @@
-from sqlalchemy.types import DateTime, Date, Time, String
+from sqlalchemy.types import DateTime, Date, Time, String, JSON
 
 playlist_types = {'datetime': DateTime,
                   'date': Date,

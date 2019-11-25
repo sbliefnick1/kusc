@@ -52,6 +52,13 @@ def process_dataframes(html: ResultSet,
         table_dataframes[j]['show'] = hosts_and_shows[j].h3.contents[0].strip()
         table_dataframes[j]['host'] = hosts_and_shows[j].h3.contents[1].text[5:]
 
+        # extract performer information: third <td> of each <tr>
+        # todo: get performers (split on <br>), isolate soloists and their instrument (sometimes >1) versus ensembles
+        # todo: store performer data as json
+        table = html[j]
+
+        # todo: determine type of piece, e.g., concerto, ballad, sonata by extracting from title
+
         # extract purchase link for each piece: last <td> of each <tr>
         pieces = html[j].find_all('tr')
         links = [row.find_all('td')[-1].a.attrs['href'] for row in pieces]
