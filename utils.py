@@ -5,7 +5,7 @@ from typing import List
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from bs4.element import ResultSet
+from bs4.element import ResultSet, Tag, NavigableString
 
 
 def get_date_list() -> list:
@@ -42,6 +42,11 @@ def extract_soup_data(soup_data: BeautifulSoup) -> (ResultSet, List[pd.DataFrame
     hosts_and_shows = soup_data.find_all('div', attrs={'class': 'accordion-content'})
 
     return html, table_dataframes, hosts_and_shows
+
+
+def extract_performer_info(table: Tag):
+    # performers are in the third <td> of every row (time is stored in a <th>)
+    performers = [tr.find_all('td')[2].contents for tr in table.find_all('tr')]
 
 
 def process_dataframes(html: ResultSet,
