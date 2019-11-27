@@ -44,9 +44,11 @@ def extract_soup_data(soup_data: BeautifulSoup) -> (ResultSet, List[pd.DataFrame
     return html, table_dataframes, hosts_and_shows
 
 
-def extract_performer_info(table: Tag):
+def strip_performer_info(table: Tag) -> List[List[str]]:
     # performers are in the third <td> of every row (time is stored in a <th>)
     performers = [tr.find_all('td')[2].contents for tr in table.find_all('tr')]
+    # remove <br>s and strip whitespace
+    return [[item.strip() for item in p if type(item) is NavigableString] for p in performers]
 
 
 def process_dataframes(html: ResultSet,
@@ -60,7 +62,7 @@ def process_dataframes(html: ResultSet,
         # extract performer information: third <td> of each <tr>
         # todo: get performers (split on <br>), isolate soloists and their instrument (sometimes >1) versus ensembles
         # todo: store performer data as json
-        table = html[j]
+        performers_cleaned = strip_performer_info(html[j])
 
         # todo: determine type of piece, e.g., concerto, ballad, sonata by extracting from title
 
