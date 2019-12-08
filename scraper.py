@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 from utils import get_date_list, get_soup, extract_soup_data, process_dataframes, clean_and_format_dataframe
-from types import playlist_types
+from playlist_types import playlist_types
 
 engine = create_engine(os.environ['DATABASE_URL'])
 
