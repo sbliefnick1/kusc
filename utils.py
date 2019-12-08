@@ -1,4 +1,6 @@
 import datetime
+import json
+import re
 import sys
 from typing import List, Dict
 
@@ -53,21 +55,21 @@ def strip_performer_info(table: Tag) -> List[List[str]]:
 
 def split_performer_strings(performer: List[str]) -> dict:
     info = {}
-    index = 0
-    # item is not an empty string and is not a conductor / ensemble
-    if performer[0] and ', ' in performer[0] and ' / ' not in performer[0]:
-        soloists = performer[0].split('; ')
-        info['soloist'] = [{'musician': s.split(', ')[0], 'instrument': s.split(', ')[1]} for s in soloists]
-        index = -1
-        musician = True
+    for p in performer:
+        # soloist(s), e.g., 'John Smith, clarinet'
+        if re.match(r'.+, [a-z]+', p):
+            soloists = p.split('; ')
+            info['soloist'] = [{'musician': s.split(', ')[0], 'instrument': s.split(', ')[1]} for s in soloists]
+        # conductor / ensemble
+        elif re.match(r'.+ / .+', p):
+            info['conductor'], info['ensemble'] = p.split(' / ')
+        # ensemble only
+        elif p:
+            info['ensemble'] = p
+        # else:
+        #     info = None
 
-    if performer[-1] :
-    try:
-        info['conductor'], info['ensemble'] = performer[index].split(' / ')
-    except ValueError:
-        info['ensemble'] = performer[index]
-    return info
-
+    return json.dumps(info)
 
 
 def process_dataframes(html: ResultSet,
@@ -79,10 +81,9 @@ def process_dataframes(html: ResultSet,
         table_dataframes[j]['host'] = hosts_and_shows[j].h3.contents[1].text[5:]
 
         # extract performer information: third <td> of each <tr>
-        # todo: get performers (split on <br>), isolate soloists and their instrument (sometimes >1) versus ensembles
-        # todo: store performer data as json
         performers_cleaned = strip_performer_info(html[j])
         performers = [split_performer_strings(p) for p in performers_cleaned]
+        table_dataframes[j]['Performers'] = performers
 
         # todo: determine type of piece, e.g., concerto, ballad, sonata by extracting from title
 
