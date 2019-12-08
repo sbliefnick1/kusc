@@ -1,6 +1,6 @@
 import datetime
 import sys
-from typing import List
+from typing import List, Dict
 
 import pandas as pd
 import requests
@@ -51,6 +51,25 @@ def strip_performer_info(table: Tag) -> List[List[str]]:
     return [[item.strip() for item in p if type(item) is NavigableString] for p in performers]
 
 
+def split_performer_strings(performer: List[str]) -> dict:
+    info = {}
+    index = 0
+    # item is not an empty string and is not a conductor / ensemble
+    if performer[0] and ', ' in performer[0] and ' / ' not in performer[0]:
+        soloists = performer[0].split('; ')
+        info['soloist'] = [{'musician': s.split(', ')[0], 'instrument': s.split(', ')[1]} for s in soloists]
+        index = -1
+        musician = True
+
+    if performer[-1] :
+    try:
+        info['conductor'], info['ensemble'] = performer[index].split(' / ')
+    except ValueError:
+        info['ensemble'] = performer[index]
+    return info
+
+
+
 def process_dataframes(html: ResultSet,
                        table_dataframes: List[pd.DataFrame],
                        hosts_and_shows: ResultSet) -> List[pd.DataFrame]:
@@ -63,6 +82,7 @@ def process_dataframes(html: ResultSet,
         # todo: get performers (split on <br>), isolate soloists and their instrument (sometimes >1) versus ensembles
         # todo: store performer data as json
         performers_cleaned = strip_performer_info(html[j])
+        performers = [split_performer_strings(p) for p in performers_cleaned]
 
         # todo: determine type of piece, e.g., concerto, ballad, sonata by extracting from title
 
