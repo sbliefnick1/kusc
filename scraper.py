@@ -1,4 +1,5 @@
 import os
+import datetime
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -6,12 +7,14 @@ from sqlalchemy import create_engine
 from utils import get_date_list, get_soup, extract_soup_data, process_dataframes, clean_and_format_dataframe
 from playlist_types import playlist_types
 
-engine = create_engine(os.environ['DATABASE_URL'])
+basdir = os.path.abspath(os.path.dirname(__file__))
+engine = create_engine(os.environ.get('DATABASE_URL') or f'sqlite:///{os.path.join(basdir, "app.sqlite")}')
 
 dates = get_date_list()
+query_date = '2019/08/03'
 
-for date in dates:
-    soup = get_soup(date)
+for query_date in dates:
+    soup = get_soup(query_date)
 
     tables_html, tables_dfs, accordions = extract_soup_data(soup)
 
@@ -28,6 +31,6 @@ for date in dates:
                        'Record Co.Catalog No.': 'record_co_catalog_no',
                        }, inplace=True)
 
-    df = clean_and_format_dataframe(df)
+    df = clean_and_format_dataframe(df, datetime.datetime.strptime(query_date, '%Y/%m/%d'))
 
     df.to_sql('playlist', engine, if_exists='append', index=False, dtype=playlist_types)
